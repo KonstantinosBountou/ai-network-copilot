@@ -1,49 +1,115 @@
 # 🌐 AI Network Copilot
 
-A local, RAG-powered troubleshooting assistant for network engineers. It combines router configuration parsing, syslog analysis, and RFC knowledge retrieval to answer networking questions — grounded in real data, not just general LLM knowledge.
+A local Retrieval-Augmented Generation (RAG) assistant for network troubleshooting. It combines router configuration parsing, syslog analysis, and RFC knowledge retrieval to answer networking questions using grounded information rather than relying solely on an LLM's pretrained knowledge.
 
-## Features
+## ✨ Features
 
-- **RAG over networking RFCs** — OSPF (RFC 2328), RIP (RFC 2453), BGP (RFC 4271)
-- **Hybrid retrieval** — combines semantic search (embeddings) with keyword search (BM25) via Reciprocal Rank Fusion
-- **Config parser** — extracts structured data (interfaces, OSPF/BGP settings) from Cisco-style configs
-- **Log parser** — detects and classifies network events (OSPF/BGP adjacency changes, interface state changes, STP events) with severity levels
-- **Orchestrator** — combines config + logs + RFC context into a single grounded prompt
-- **100% local LLM** — runs on [Ollama](https://ollama.com) (llama3.2:3b), no API costs
-- **Streamlit UI** — file upload for custom configs/logs, streaming responses
-- **Dockerized** — fully containerized, runs anywhere with `docker-compose up`
-- **Retrieval evaluation framework** — measures retrieval accuracy against a ground-truth test set
+- **RAG over networking RFCs** – OSPF (RFC 2328), RIP (RFC 2453), and BGP (RFC 4271)
+- **Hybrid retrieval** – combines semantic search (embeddings) with keyword search (BM25) using Reciprocal Rank Fusion (RRF)
+- **Configuration parser** – extracts interfaces and routing protocol settings from Cisco-style configurations
+- **Syslog parser** – detects OSPF/BGP adjacency changes, interface state changes, and STP events with severity classification
+- **Grounded orchestration** – combines configuration data, log analysis, and RFC context into a single prompt
+- **100% local inference** – powered by Ollama (`llama3.2:3b`), with no API costs
+- **Streamlit UI** – upload router configurations and logs and receive streamed responses
+- **Dockerized deployment** – run the entire application using Docker Compose
+- **Retrieval evaluation framework** – compares semantic-only and hybrid retrieval against a ground-truth dataset
 
 ## 🧠 Architecture
 
+```mermaid
+flowchart TD
+
+    A[👤 User Question]
+
+    B[🌐 Streamlit UI]
+
+    C[🧩 Orchestrator]
+
+    D[📄 Config Parser]
+
+    E[📜 Log Parser]
+
+    F[🔎 Hybrid Retriever]
+
+    G[(ChromaDB<br/>RFC Knowledge Base)]
+
+    H[BM25<br/>Keyword Search]
+
+    I[Semantic Search<br/>Sentence Transformers]
+
+    J[🦙 Ollama<br/>llama3.2:3b]
+
+    K[💬 Grounded Response]
+
+    A --> B
+    B --> C
+
+    C --> D
+    C --> E
+    C --> F
+
+    F --> G
+    F --> H
+    F --> I
+
+    D --> J
+    E --> J
+    F --> J
+
+    J --> K
+    K --> B
+```
+
+## 🛠 Tech Stack
+
+| Component | Technology |
+|------------|------------|
+| **Programming Language** | Python 3.11+ |
+| **LLM** | Ollama (`llama3.2:3b`) |
+| **LLM Framework** | LangChain |
+| **Vector Database** | ChromaDB |
+| **Embeddings** | Sentence-Transformers (`all-MiniLM-L6-v2`) |
+| **Keyword Retrieval** | `rank_bm25` |
+| **Hybrid Retrieval** | Reciprocal Rank Fusion (RRF) |
+| **Frontend** | Streamlit |
+| **Containerization** | Docker & Docker Compose |
+
+## 📂 Project Structure
+
 ```text
-User Question
-     |
-     v
-Hybrid Retriever
-(Semantic Search + BM25)
-     |
-     v
-RFC Knowledge Base
-(ChromaDB Vector Store)
-     |
-     v
-Orchestrator
-(Config Parser + Log Parser + RFC Context)
-     |
-     v
-Local LLM
-(Ollama / llama3.2:3b)
-     |
-     v
-Streamlit UI
-(Streamed Response)
+ai-network-copilot/
+│
+├── .streamlit/
+│   └── config.toml                 # Streamlit configuration
+│
+├── core/
+│   ├── ingest.py                   # Builds the RFC vector database
+│   ├── hybrid_retrieval.py         # Semantic + BM25 retrieval (RRF)
+│   ├── config_parser.py            # Cisco configuration parser
+│   ├── log_parser.py               # Syslog event parser
+│   ├── orchestrator.py             # Combines retrieved context for the LLM
+│   ├── rag_chat.py                 # RAG pipeline
+│   ├── evaluate_retrieval.py       # Retrieval evaluation
+│   └── query_test.py               # Retrieval testing utilities
+│
+├── data/
+│   ├── chroma_db/                  # ChromaDB persistent vector store
+│   ├── configs/                    # Sample router configurations
+│   ├── logs/                       # Sample syslog files
+│   └── rfc/                        # RFC source documents
+│
+├── frontend/
+│   └── app.py                      # Streamlit web application
+│
+├── Dockerfile
+├── docker-compose.yml
+├── requirements.txt
+├── .gitignore
+├── .dockerignore
+└── README.md
+```
 
-## Tech Stack
-
-Python, LangChain (text splitting), ChromaDB (vector store), Sentence-Transformers (embeddings), rank_bm25 (keyword search), Ollama (local LLM), Streamlit (UI), Docker.
-
-## Running locally
+## 🚀 Running Locally
 
 ### Prerequisites
 - Python 3.11+
@@ -88,25 +154,6 @@ python core/evaluate_retrieval.py
 ```
 
 Compares semantic-only vs. hybrid retrieval accuracy against a ground-truth test set of networking questions.
-
-## Project structure
-ai-network-copilot/
-├── core/
-│   ├── ingest.py              # RFC ingestion + chunking + embeddings
-│   ├── config_parser.py       # Cisco-style config parser
-│   ├── log_parser.py          # Syslog event parser
-│   ├── hybrid_retrieval.py    # Semantic + BM25 hybrid search
-│   ├── orchestrator.py        # Combines all sources for CLI use
-│   └── evaluate_retrieval.py  # Retrieval accuracy evaluation
-├── frontend/
-│   └── app.py                 # Streamlit UI
-├── data/
-│   ├── rfc/                   # RFC source documents
-│   ├── configs/                # Sample router configs
-│   └── logs/                   # Sample router logs
-├── Dockerfile
-├── docker-compose.yml
-└── requirements.txt
 
 ## Known limitations
 
