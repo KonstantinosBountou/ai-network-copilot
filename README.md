@@ -210,20 +210,39 @@ The application will run in a container while connecting to the Ollama instance 
 
 ## Retrieval Evaluation
 
-The project includes a retrieval evaluation script that compares semantic-only retrieval with hybrid retrieval.
+The project includes a strict retrieval evaluation script that compares semantic-only retrieval with hybrid retrieval.
+
+The evaluation checks whether the retrieved chunk comes from the correct RFC source and contains the required keyword or concept for each test question.
 
 ```bash
 python core/evaluate_retrieval.py
 ```
 
-Example reporting format:
+Current evaluation run:
 
 | Method | Result |
 | --- | --- |
-| Semantic-only retrieval | Add measured result |
-| Hybrid retrieval with RRF | Add measured result |
+| Semantic-only retrieval | 9/12 = 75.0% |
+| Hybrid retrieval with RRF | 8/12 = 66.7% |
 
-> Replace the placeholder values above with the actual results produced by `core/evaluate_retrieval.py`.
+Evaluation details:
+
+| Test Question | Required Keyword | Semantic-only | Hybrid |
+| --- | --- | --- | --- |
+| Why does OSPF adjacency fail? | `dead` | Fail | Fail |
+| What is the Designated Router in OSPF? | `designated router` | Pass | Pass |
+| What are the OSPF neighbor states? | `exstart` | Pass | Fail |
+| How does the Hello protocol work in OSPF? | `hello` | Pass | Pass |
+| What is split horizon in RIP? | `split horizon` | Pass | Pass |
+| What is the maximum hop count in RIP? | `16` | Fail | Fail |
+| How does RIP handle routing loops? | `poison` | Fail | Fail |
+| What is the purpose of BGP path attributes? | `path attribute` | Pass | Pass |
+| What is the BGP hold timer? | `hold time` | Pass | Pass |
+| How does BGP select the best path? | `decision` | Pass | Pass |
+| What is an autonomous system in BGP? | `autonomous system` | Pass | Pass |
+| Why would a BGP neighbor session reset? | `notification` | Pass | Pass |
+
+In this strict test set, semantic-only retrieval performs slightly better than hybrid retrieval. This is useful because it shows that the project does not assume hybrid retrieval is always superior; instead, it measures retrieval behavior against a concrete ground-truth dataset.
 
 ## Example Workflow
 
@@ -264,4 +283,3 @@ To make the repository look more complete on GitHub, consider adding:
 
 Built by [Konstantinos Bountourasas](https://github.com/KonstantinosBountou)  
 Electrical and Computer Engineering, University of Peloponnese
-
