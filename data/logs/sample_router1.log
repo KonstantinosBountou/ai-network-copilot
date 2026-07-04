@@ -1,0 +1,8 @@
+Jul  2 08:15:03 Router1 %OSPF-5-ADJCHG: Process 1, Nbr 10.0.1.2 on GigabitEthernet0/0 from LOADING to FULL, Loading Done
+Jul  2 08:17:41 Router1 %LINK-3-UPDOWN: Interface GigabitEthernet0/1, changed state to down
+Jul  2 08:17:42 Router1 %OSPF-5-ADJCHG: Process 1, Nbr 192.168.10.5 on GigabitEthernet0/1 from FULL to DOWN, Neighbor Down: Interface down or detached
+Jul  2 08:22:10 Router1 %BGP-5-ADJCHANGE: neighbor 172.16.0.1 Up
+Jul  2 08:35:55 Router1 %OSPF-5-ADJCHG: Process 1, Nbr 10.0.1.2 on GigabitEthernet0/0 from FULL to DOWN, Neighbor Down: Dead timer expired
+Jul  2 08:36:02 Router1 %LINK-3-UPDOWN: Interface GigabitEthernet0/0, changed state to down
+Jul  2 08:40:15 Router1 %BGP-5-ADJCHANGE: neighbor 172.16.0.1 Down BGP Notification sent
+Jul  2 08:45:30 Router1 %SPANTREE-2-BLOCK_BPDUGUARD_SHUT: Received BPDU on port GigabitEthernet0/2 with BPDU Guard enabled. Disabling port.

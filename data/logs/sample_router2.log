@@ -1,0 +1,7 @@
+Jul  3 09:10:15 Router2 %BGP-5-ADJCHANGE: neighbor 203.0.113.2 Up
+Jul  3 09:45:22 Router2 %BGP-5-ADJCHANGE: neighbor 203.0.113.2 Down BGP Notification sent, Hold Timer Expired
+Jul  3 09:45:23 Router2 %BGP-3-NOTIFICATION: sent to neighbor 203.0.113.2 4/0 (hold time expired) 0 bytes
+Jul  3 09:47:01 Router2 %BGP-5-ADJCHANGE: neighbor 203.0.113.2 Up
+Jul  3 10:15:40 Router2 %BGP-5-ADJCHANGE: neighbor 203.0.113.2 Down BGP Notification sent, Hold Timer Expired
+Jul  3 10:15:41 Router2 %BGP-3-NOTIFICATION: sent to neighbor 203.0.113.2 4/0 (hold time expired) 0 bytes
+Jul  3 10:17:15 Router2 %BGP-5-ADJCHANGE: neighbor 203.0.113.2 Up
