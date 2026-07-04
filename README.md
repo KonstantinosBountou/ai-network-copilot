@@ -12,7 +12,7 @@ It analyzes Cisco-style router configurations, syslog events, and networking RFC
 
 ## Demo
 
-![AI Network Copilot demo](assets/Demo.png)
+![AI Network Copilot demo](Assets/Demo.png)
 
 ## What It Can Answer
 
