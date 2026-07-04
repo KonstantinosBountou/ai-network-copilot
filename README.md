@@ -1,45 +1,70 @@
-# 🌐 AI Network Copilot
+# AI Network Copilot
 
-A local Retrieval-Augmented Generation (RAG) assistant for network troubleshooting. It combines router configuration parsing, syslog analysis, and RFC knowledge retrieval to answer networking questions using grounded information rather than relying solely on an LLM's pretrained knowledge.
+![Python](https://img.shields.io/badge/Python-3.11+-blue)
+![Streamlit](https://img.shields.io/badge/UI-Streamlit-red)
+![Docker](https://img.shields.io/badge/Docker-Compose-blue)
+![Local LLM](https://img.shields.io/badge/LLM-Ollama-green)
+![RAG](https://img.shields.io/badge/RAG-Hybrid%20Retrieval-purple)
 
-## ✨ Features
+AI Network Copilot is a fully local Retrieval-Augmented Generation (RAG) assistant for network troubleshooting.
 
-- **RAG over networking RFCs** – OSPF (RFC 2328), RIP (RFC 2453), and BGP (RFC 4271)
-- **Hybrid retrieval** – combines semantic search (embeddings) with keyword search (BM25) using Reciprocal Rank Fusion (RRF)
-- **Configuration parser** – extracts interfaces and routing protocol settings from Cisco-style configurations
-- **Syslog parser** – detects OSPF/BGP adjacency changes, interface state changes, and STP events with severity classification
-- **Grounded orchestration** – combines configuration data, log analysis, and RFC context into a single prompt
-- **100% local inference** – powered by Ollama (`llama3.2:3b`), with no API costs
-- **Streamlit UI** – upload router configurations and logs and receive streamed responses
-- **Dockerized deployment** – run the entire application using Docker Compose
-- **Retrieval evaluation framework** – compares semantic-only and hybrid retrieval against a ground-truth dataset
+It analyzes Cisco-style router configurations, syslog events, and networking RFCs to answer operational networking questions with grounded, source-aware responses. The system combines hybrid retrieval, structured parsers, and local LLM inference through Ollama, making it suitable for offline experimentation, academic work, and privacy-preserving network diagnostics.
 
-## 🧠 Architecture
+## Demo
+
+> Add a screenshot or short GIF of the Streamlit interface here.
+
+```md
+![AI Network Copilot UI](docs/demo-screenshot.png)
+```
+
+## What It Can Answer
+
+AI Network Copilot is designed to help with practical network troubleshooting questions such as:
+
+- Why did my OSPF adjacency go down?
+- Which interfaces are configured with OSPF?
+- What does RFC 2328 say about OSPF neighbor states?
+- Are there BGP session resets in this syslog file?
+- Which routing events appear in the uploaded logs?
+- How do the router configuration and syslog events relate to each other?
+- What RFC context is relevant to this routing issue?
+
+## Key Features
+
+- **RAG over networking RFCs**: retrieves context from OSPF, RIP, and BGP RFC documents.
+- **Hybrid retrieval**: combines semantic search with BM25 keyword search using Reciprocal Rank Fusion (RRF).
+- **Cisco-style configuration parser**: extracts interfaces and routing protocol settings from uploaded router configs.
+- **Syslog parser**: detects OSPF/BGP adjacency changes, interface state changes, and STP events.
+- **Grounded orchestration**: combines config data, log analysis, and RFC context into one structured LLM prompt.
+- **100% local inference**: uses Ollama with `llama3.2:3b`, avoiding external API calls and API costs.
+- **Streamlit UI**: provides a simple interface for uploading configurations and logs.
+- **Dockerized deployment**: runs through Docker Compose.
+- **Retrieval evaluation framework**: compares semantic-only and hybrid retrieval against a ground-truth dataset.
+
+## Key Differentiators
+
+- Runs fully locally with Ollama.
+- Uses both semantic and keyword retrieval instead of relying on vector search alone.
+- Combines unstructured RFC knowledge with structured configuration and log parsing.
+- Includes a retrieval evaluation script for measurable comparison.
+- Focuses on a real networking workflow rather than a generic chatbot use case.
+
+## Architecture
 
 ```mermaid
 flowchart TD
-
-    A[👤 User Question]
-
-    B[🌐 Streamlit UI]
-
-    C[🧩 Orchestrator]
-
-    D[📄 Config Parser]
-
-    E[📜 Log Parser]
-
-    F[🔎 Hybrid Retriever]
-
-    G[(ChromaDB<br/>RFC Knowledge Base)]
-
-    H[BM25<br/>Keyword Search]
-
-    I[Semantic Search<br/>Sentence Transformers]
-
-    J[🦙 Ollama<br/>llama3.2:3b]
-
-    K[💬 Grounded Response]
+    A[User Question]
+    B[Streamlit UI]
+    C[Orchestrator]
+    D[Config Parser]
+    E[Log Parser]
+    F[Hybrid Retriever]
+    G[(ChromaDB RFC Knowledge Base)]
+    H[BM25 Keyword Search]
+    I[Semantic Search Sentence Transformers]
+    J[Ollama llama3.2:3b]
+    K[Grounded Response]
 
     A --> B
     B --> C
@@ -60,47 +85,50 @@ flowchart TD
     K --> B
 ```
 
-## 🛠 Tech Stack
+## Tech Stack
 
 | Component | Technology |
-|------------|------------|
-| **Programming Language** | Python 3.11+ |
-| **LLM** | Ollama (`llama3.2:3b`) |
-| **LLM Framework** | LangChain |
-| **Vector Database** | ChromaDB |
-| **Embeddings** | Sentence-Transformers (`all-MiniLM-L6-v2`) |
-| **Keyword Retrieval** | `rank_bm25` |
-| **Hybrid Retrieval** | Reciprocal Rank Fusion (RRF) |
-| **Frontend** | Streamlit |
-| **Containerization** | Docker & Docker Compose |
+| --- | --- |
+| Programming Language | Python 3.11+ |
+| LLM | Ollama `llama3.2:3b` |
+| LLM Framework | LangChain |
+| Vector Database | ChromaDB |
+| Embeddings | Sentence Transformers `all-MiniLM-L6-v2` |
+| Keyword Retrieval | `rank_bm25` |
+| Hybrid Retrieval | Reciprocal Rank Fusion |
+| Frontend | Streamlit |
+| Containerization | Docker and Docker Compose |
 
-## 📂 Project Structure
+## Project Structure
 
 ```text
 ai-network-copilot/
-│
+|
 ├── .streamlit/
-│   └── config.toml                 # Streamlit configuration
-│
+│   └── config.toml
+|
 ├── core/
-│   ├── ingest.py                   # Builds the RFC vector database
-│   ├── hybrid_retrieval.py         # Semantic + BM25 retrieval (RRF)
-│   ├── config_parser.py            # Cisco configuration parser
-│   ├── log_parser.py               # Syslog event parser
-│   ├── orchestrator.py             # Combines retrieved context for the LLM
-│   ├── rag_chat.py                 # RAG pipeline
-│   ├── evaluate_retrieval.py       # Retrieval evaluation
-│   └── query_test.py               # Retrieval testing utilities
-│
+│   ├── ingest.py
+│   ├── hybrid_retrieval.py
+│   ├── config_parser.py
+│   ├── log_parser.py
+│   ├── orchestrator.py
+│   ├── rag_chat.py
+│   ├── evaluate_retrieval.py
+│   └── query_test.py
+|
 ├── data/
-│   ├── chroma_db/                  # ChromaDB persistent vector store
-│   ├── configs/                    # Sample router configurations
-│   ├── logs/                       # Sample syslog files
-│   └── rfc/                        # RFC source documents
-│
+│   ├── chroma_db/
+│   ├── configs/
+│   ├── logs/
+│   └── rfc/
+|
 ├── frontend/
-│   └── app.py                      # Streamlit web application
-│
+│   └── app.py
+|
+├── docs/
+│   └── demo-screenshot.png
+|
 ├── Dockerfile
 ├── docker-compose.yml
 ├── requirements.txt
@@ -109,58 +137,131 @@ ai-network-copilot/
 └── README.md
 ```
 
-## 🚀 Running Locally
+## Running Locally
 
 ### Prerequisites
+
 - Python 3.11+
-- [Ollama](https://ollama.com) installed, with `llama3.2:3b` pulled (`ollama pull llama3.2:3b`)
+- Ollama installed
+- `llama3.2:3b` pulled locally
+
+Install the model:
+
+```bash
+ollama pull llama3.2:3b
+```
 
 ### Setup
 
 ```bash
-git clone <this-repo-url>
+git clone https://github.com/KonstantinosBountou/ai-network-copilot.git
 cd ai-network-copilot
 python -m venv venv
-venv\Scripts\activate   # Windows
+```
+
+Activate the virtual environment on Windows:
+
+```bash
+venv\Scripts\activate
+```
+
+Install dependencies:
+
+```bash
 pip install -r requirements.txt
 ```
 
-### Ingest RFC knowledge base (first time only)
+### Ingest the RFC Knowledge Base
+
+Run this once before using the app:
 
 ```bash
 python core/ingest.py
 ```
 
-### Run the app
+### Run the App
 
 ```bash
 streamlit run frontend/app.py
 ```
 
-Open `http://localhost:8501` in your browser.
+Then open:
+
+```text
+http://localhost:8501
+```
 
 ## Running with Docker
 
+Make sure Ollama is running on the host machine before starting Docker Compose.
+
 ```bash
+ollama serve
+```
+
+In another terminal:
+
+```bash
+ollama pull llama3.2:3b
 docker-compose up --build
 ```
 
-This runs the app in a container while connecting to Ollama on your host machine.
+The application will run in a container while connecting to the Ollama instance on the host machine.
 
-## Evaluating retrieval quality
+## Retrieval Evaluation
+
+The project includes a retrieval evaluation script that compares semantic-only retrieval with hybrid retrieval.
 
 ```bash
 python core/evaluate_retrieval.py
 ```
 
-Compares semantic-only vs. hybrid retrieval accuracy against a ground-truth test set of networking questions.
+Example reporting format:
 
-## Known limitations
+| Method | Result |
+| --- | --- |
+| Semantic-only retrieval | Add measured result |
+| Hybrid retrieval with RRF | Add measured result |
 
-- Small local LLM (3B params) can occasionally produce plausible-sounding but incorrect details not present in the source data (mitigated via strict prompting, but not eliminated)
-- Hybrid retrieval improves some queries but not universally — see `evaluate_retrieval.py` results for a concrete, measured comparison against semantic-only search
-- Currently supports Cisco-style config syntax only
+> Replace the placeholder values above with the actual results produced by `core/evaluate_retrieval.py`.
+
+## Example Workflow
+
+1. Upload a Cisco-style router configuration file.
+2. Upload a syslog file containing routing or interface events.
+3. Ask a troubleshooting question through the Streamlit UI.
+4. The app parses the uploaded files, retrieves relevant RFC context, and sends a grounded prompt to the local LLM.
+5. The response is generated using the configuration, logs, and retrieved RFC passages.
+
+## Known Limitations
+
+- The local 3B parameter model can occasionally produce plausible-sounding but incorrect details that are not present in the source data.
+- Hybrid retrieval improves some queries but may not outperform semantic-only search for every question.
+- The configuration parser currently supports Cisco-style syntax only.
+- The current RFC knowledge base focuses on OSPF, RIP, and BGP.
+
+## Roadmap
+
+- Add support for more routing protocols.
+- Improve Cisco configuration parsing coverage.
+- Add richer citation formatting in generated answers.
+- Add unit tests for parsers and retrieval behavior.
+- Support alternative local models.
+- Add more sample troubleshooting scenarios.
+- Improve evaluation with a larger ground-truth dataset.
+
+## Suggested Repository Improvements
+
+To make the repository look more complete on GitHub, consider adding:
+
+- A real UI screenshot or GIF in `docs/demo-screenshot.png`.
+- A `tests/` directory with unit tests for `config_parser.py` and `log_parser.py`.
+- Actual retrieval evaluation results in the table above.
+- A few sample input files under `data/configs/` and `data/logs/`.
+- A short demo video link if available.
 
 ## Author
 
-Built by Konstantinos Bountourasas — Electrical & Computer Engineering, University of Peloponnese.
+Built by [Konstantinos Bountourasas](https://github.com/KonstantinosBountou)  
+Electrical and Computer Engineering, University of Peloponnese
+
