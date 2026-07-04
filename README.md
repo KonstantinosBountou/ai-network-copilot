@@ -12,11 +12,7 @@ It analyzes Cisco-style router configurations, syslog events, and networking RFC
 
 ## Demo
 
-> Add a screenshot or short GIF of the Streamlit interface here.
-
-```md
 ![AI Network Copilot UI](docs/demo-screenshot.png)
-```
 
 ## What It Can Answer
 
