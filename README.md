@@ -14,20 +14,30 @@ A local, RAG-powered troubleshooting assistant for network engineers. It combine
 - **Dockerized** — fully containerized, runs anywhere with `docker-compose up`
 - **Retrieval evaluation framework** — measures retrieval accuracy against a ground-truth test set
 
-## Architecture
+## 🧠 Architecture
+
+```text
 User Question
-|
-v
-Hybrid Retriever (Semantic + BM25) --> RFC Knowledge (ChromaDB)
-|
-v
-Orchestrator --> combines with Config Parser + Log Parser output
-|
-v
-Local LLM (Ollama) --> Cause / Explanation / Fix
-|
-v
-Streamlit UI (streamed response)
+     |
+     v
+Hybrid Retriever
+(Semantic Search + BM25)
+     |
+     v
+RFC Knowledge Base
+(ChromaDB Vector Store)
+     |
+     v
+Orchestrator
+(Config Parser + Log Parser + RFC Context)
+     |
+     v
+Local LLM
+(Ollama / llama3.2:3b)
+     |
+     v
+Streamlit UI
+(Streamed Response)
 
 ## Tech Stack
 
@@ -106,4 +116,4 @@ ai-network-copilot/
 
 ## Author
 
-Built by Konstantinos Konstantinos — Electrical & Computer Engineering, University of Peloponnese.
+Built by Konstantinos Bountourasas — Electrical & Computer Engineering, University of Peloponnese.
